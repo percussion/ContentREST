@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright © 2005-2011 Percussion Software.
+  
+  Permission is hereby granted, free of charge, to use, copy and create derivative works of this software and associated documentation files (the “Software”) for internal use only and only in connection with products from Percussion Software. 
+  
+  The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL PERCUSSION SOFTWARE BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jaxrs="http://cxf.apache.org/jaxrs" xmlns:jaxws="http://cxf.apache.org/jaxws"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="
+http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans.xsd
+http://cxf.apache.org/jaxrs
+http://cxf.apache.org/schemas/jaxrs.xsd
+http://cxf.apache.org/jaxws
+http://cxf.apache.org/schemas/jaxws.xsd
+http://www.springframework.org/schema/context
+http://www.springframework.org/schema/context/spring-context-2.5.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
+http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
+
+	<import resource="classpath:META-INF/cxf/cxf.xml" />
+	<import resource="classpath:META-INF/cxf/cxf-extension-jaxrs-binding.xml" />
+	<import resource="classpath:META-INF/cxf/cxf-extension-http-binding.xml" />
+	<import resource="classpath:META-INF/cxf/cxf-servlet.xml" />
+
+	<context:component-scan base-package="com.percussion.pso.restservice" />
+
+	<bean id="methodCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+		<property name="cacheManager">
+			<ref bean="sys_cacheManager" />
+		</property>
+		<property name="cacheName">
+			<value>com.percussion.pso.restservice.cache.METHOD_CACHE</value>
+		</property>
+	</bean>
+
+	<bean id="methodCacheInterceptor"
+		class="com.percussion.pso.restservice.utils.MethodCacheInterceptor">
+		<property name="cache">
+			<ref local="methodCache" />
+		</property>
+	</bean>
+
+	<bean id="methodCachePointCut"
+		class="org.springframework.aop.support.RegexpMethodPointcutAdvisor">
+		<property name="advice">
+			<ref local="methodCacheInterceptor" />
+		</property>
+		<property name="patterns">
+			<list>
+				<value>.*getWorkflowName</value>
+				<value>.*getStateName</value>
+				<value>.*getStateName</value>
+				<value>.*getSiteName</value>
+				<value>.*getFolderPath</value>
+				<value>.*getSlotName</value>
+				<value>.*getTemplateName</value>
+				<value>.*getContentTypeName</value>
+				<value>.*getCommunityName</value>
+				<value>.*getCommunityId</value>
+				<value>.*getItemDefinition</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="psoImportSystemInfo" class="org.springframework.aop.framework.ProxyFactoryBean">
+		<property name="target">
+			<bean
+				class="com.percussion.pso.restservice.support.impl.ImportItemSystemInfoImpl" />
+		</property>
+		<property name="interceptorNames">
+			<list>
+				<value>methodCachePointCut</value>
+			</list>
+		</property>
+	</bean>
+
+	<jaxrs:client username="admin1" password="demo" id="restItemClient"
+		address="http://localhost:9992/Rhythmyx/services" serviceClass="com.percussion.pso.restservice.IItemRestService"
+		inheritHeaders="true">
+		<jaxrs:headers>
+			<entry key="Accept" value="text/xml" />
+			<entry key="RX_USEBASICAUTH" value="true" />
+		</jaxrs:headers>
+	</jaxrs:client>
+	
+	
+
+</beans>

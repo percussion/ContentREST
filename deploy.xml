@@ -1,0 +1,102 @@
+<project name="Rhythmyx 6 Install Extensions" default="dist"
+	basedir=".">
+	<description>
+		Install extensions on a Rhythmyx 6 server
+		The RHYTHMYX_HOME environment variable must be set 
+    </description>
+	<property environment="env" />
+	<!-- base directory of Rhythmyx installation -->
+	<property name="rhythmyx.home" location="${env.RHYTHMYX_HOME}" />
+	<property name="rhythmyx.WEB-INF"
+		value="${rhythmyx.home}/AppServer/server/rx/deploy/rxapp.ear/rxapp.war/WEB-INF" />
+	<property name="rhythmyx.lib" value="${rhythmyx.WEB-INF}/lib" />
+	<property name="rhythmyx.baselib" value="${rhythmyx.home}/AppServer/server/rx/lib" />
+	<!-- relative paths -->
+	<property name="lib" location="lib" />
+
+
+	<target name="jarcopy" description="copy the jar file">
+		<move todir="${rhythmyx.lib}" failonerror="false">
+				    <fileset dir="${rhythmyx.lib}">
+				    	 <include name="cxf-2.1.3.jar" /> 
+				    	 <include name="jsr311-api-0.8.jar" /> 
+				    	<!-- remove old Content-rs if it exists -->
+				    	 <include name="Content-rs.jar" /> 
+				    	 <include name="contentrs-*.jar" /> 
+				    </fileset>
+				    <mapper type="glob" from="*" to="*.bak"/>
+		</move>
+		<fail unless="env.RHYTHMYX_HOME"
+			message="You must set the RHYTHMYX_HOME environment variable" />
+		
+		<copy todir="${rhythmyx.lib}" verbose="true">
+			<fileset dir="${lib}">
+				<include name="**.jar" />
+			</fileset>
+			<fileset dir="${basedir}">
+				<include name="**.jar" />
+			</fileset>
+		</copy>
+		<copy todir="${rhythmyx.baselib}" verbose="true">
+			<fileset dir="${lib}">
+				<include name="spring*.jar" />
+			</fileset>
+		</copy>
+		<copy todir="${rhythmyx.WEB-INF}" verbose="true">
+			<fileset dir="WEB-INF" />
+		</copy>
+		<copy todir="${rhythmyx.home}/rxconfig" verbose="true" failonerror="false" overwrite="false">
+			<fileset dir="Rhythmyx/rxconfig" />
+		</copy>
+		
+	</target>
+
+	<target name="installExtensions">
+		<fail unless="env.RHYTHMYX_HOME"
+			message="You must set the RHYTHMYX_HOME environment variable" />
+		<java classname="com.percussion.util.PSExtensionInstallTool"
+			fork="true">
+			<arg value="${rhythmyx.home}" />
+			<arg value="${basedir}" />
+			<classpath>
+				<fileset dir="${rhythmyx.lib}">
+					<include name="rxserver.jar" />
+					<include name="rxclient.jar" />
+					<include name="rxbusiness.jar" />
+					<include name="rxutils.jar" />
+					<include name="rxservices.jar" />
+					<include name="commons-lang*.jar" />
+					<include name="commons-jexl*.jar" />
+					<include name="jcr*.jar" />
+					<include name="commons-logging*.jar" />
+					<include name="commons-collections*.jar" />
+					<include name="commons-httpclient*.jar" />
+				</fileset>
+				<fileset dir="${rhythmyx.home}/AppServer/lib/endorsed">
+					<include name="xml-apis.jar" />
+				</fileset>
+				<fileset dir="${rhythmyx.home}/AppServer/server/rx/lib">
+					<include name="javax.servlet.jar" />
+				</fileset>
+			</classpath>
+		</java>
+	</target>
+
+	<target name="javadoc">
+		<fail unless="env.RHYTHMYX_HOME"
+			message="You must set the RHYTHMYX_HOME environment variable" />
+		<copy todir="${rhythmyx.home}/Docs/Rhythmyx/PSOToolkit">
+			<fileset dir="javadoc" />
+		</copy>
+	</target>
+
+	<target name="dist">
+		<fail unless="env.RHYTHMYX_HOME"
+			message="You must set the RHYTHMYX_HOME environment variable" />
+		<echo>Installing Content-rs to ${rhythmyx.home}</echo>
+		<antcall target="jarcopy" />
+		<antcall target="installExtensions" />
+
+		<!--<antcall target="javadoc" /> -->
+	</target>
+</project>

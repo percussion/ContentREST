@@ -1,0 +1,14 @@
+com.percussion.pso.imp.assembler
+com.percussion.pso.jexl
+com.percussion.pso.restservice
+com.percussion.pso.restservice.exception
+com.percussion.pso.restservice.impl
+com.percussion.pso.restservice.jexl
+com.percussion.pso.restservice.model
+com.percussion.pso.restservice.model.results
+com.percussion.pso.restservice.support
+com.percussion.pso.restservice.support.impl
+com.percussion.pso.restservice.utils
+com.percussion.pso.syndication
+com.percussion.pso.transformers
+com.percussion.pso.utils

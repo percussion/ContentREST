@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Copyright © 2005-2011 Percussion Software.
+  
+  Permission is hereby granted, free of charge, to use, copy and create derivative works of this software and associated documentation files (the “Software”) for internal use only and only in connection with products from Percussion Software. 
+  
+  The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL PERCUSSION SOFTWARE BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+-->
+<PSXExtensionHandlerConfiguration
+	handlerName="Java">
+
+	<Extension categorystring="" context="global/percussion/user/"
+		deprecated="no" handler="Java" name="psoImporter"
+		restoreRequestParamsOnError="no">
+		<initParam name="com.percussion.user.description">Import JEXL utitlities</initParam>
+		<initParam name="com.percussion.extension.version">1</initParam>
+		<initParam name="com.percussion.extension.reentrant">yes</initParam>
+		<initParam name="className">com.percussion.pso.restservice.jexl.PSOImportJexl</initParam>
+		<interface name="com.percussion.extension.IPSJexlExpression" />
+		<suppliedResources />
+	</Extension>
+	<Extension categorystring="" context="global/percussion/user/" deprecated="no" handler="Java" name="psoFeedTools" restoreRequestParamsOnError="no">
+		<initParam name="com.percussion.user.description">PSO Feed utilities</initParam>
+		<initParam name="com.percussion.extension.version">1</initParam>
+		<initParam name="com.percussion.extension.reentrant">yes</initParam>
+		<initParam name="className">com.percussion.pso.jexl.PSOFeedTools</initParam>
+		<interface name="com.percussion.extension.IPSJexlExpression"/>
+		<suppliedResources/>
+	</Extension>
+	
+	<Extension categorystring="" context="global/percussion/assemblers/"
+		deprecated="no" handler="Java" name="importVelocityAssembler"
+		restoreRequestParamsOnError="no">
+		<initParam name="com.percussion.user.description">An Assembler for importing items</initParam>
+		<initParam name="com.percussion.extension.version">7</initParam>
+		<initParam name="com.percussion.extension.reentrant">yes</initParam>
+		<initParam name="className">com.percussion.pso.imp.assembler.PSImportVelocityAssembler</initParam>
+		<initParam name="com.percussion.extension.assembly.libraries">sys_assembly.vm,rx_assembly.vm</initParam>
+		<initParam name="com.percussion.extension.assembly.fileSuffix">.vm</initParam>
+		<initParam name="com.percussion.extension.assembly.autoReload">yes</initParam>
+
+		<interface name="com.percussion.services.assembly.IPSAssembler" />
+
+		<suppliedResources />
+	</Extension>
+	
+</PSXExtensionHandlerConfiguration>
