@@ -425,7 +425,7 @@ public class PSOImportJexl  extends PSJexlUtilBase implements IPSJexlExpression 
 		String lastModified=null;
 		
 		/** Before we do anything we need to check to see if this item exists. If it does
-		 * we want to get the cached ETag and Last Modified headers to we don't download it unecessarily. 
+		 * we want to get the cached ETag and Last Modified headers to we don't download it unnecessarily. 
 		 */
 		//IItemRestService svc = ItemRestServiceLocator.getItemServiceBase();
 		ItemRestServiceImpl svc = new ItemRestServiceImpl();
@@ -470,22 +470,25 @@ public class PSOImportJexl  extends PSJexlUtilBase implements IPSJexlExpression 
 			get.addRequestHeader(HTTP_IFMODIFIED,lastModified);
 		}
 		
+		//Specify that we want UTF-8 content.
+		get.addRequestHeader("Content-Type","text/xhtml; charset=UTF-8");
+		
 		get.setFollowRedirects(true);
 
 		try {
 			int code = client.executeMethod(get);
 			
 			if(code != HttpStatus.SC_NOT_MODIFIED){
+		
 				InputStream responseBody = get.getResponseBodyAsStream();
-	
-				log.debug("Request Character Set: " + get.getRequestCharSet());
+				
+				log.debug("Response Character Set: " + get.getResponseCharSet());
 				
 				if(!get.getRequestCharSet().equals("UTF-8")){
-					//TODO: Add some real conversion code in here - also add a test to see if the document prolog matches.
-					log.warn("Changing document Character set to UTF-8");
+					log.warn("Warning, source character set is not UTF-8");
 				}
-					
-					doc = HtmlLinkHelper.convertLinksToAbsolute(url,Jsoup.parse(responseBody, "UTF-8", HtmlLinkHelper.getBaseLink(url)));
+				
+					doc = HtmlLinkHelper.convertLinksToAbsolute(url,Jsoup.parse(responseBody,"UTF-8", HtmlLinkHelper.getBaseLink(url)));
 					
 				
 					ret = new HttpHtmlResponse(doc,get.getResponseHeaders());
@@ -554,5 +557,5 @@ public class PSOImportJexl  extends PSJexlUtilBase implements IPSJexlExpression 
         }
         return result;
     }
-
+    
 }
