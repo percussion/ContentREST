@@ -464,6 +464,7 @@ public class ItemRestServiceImpl implements IItemRestService {
 		try {
 	
 		initServices();
+		
 		int id = -1;
 		log.debug("Id referenced from item is " + item.getContentId());
 		if (item.getContentId() == null || item.getContentId() == -1) {
@@ -664,6 +665,10 @@ public class ItemRestServiceImpl implements IItemRestService {
 				}
 
 				if(!isEdit){
+					
+					log.debug("Setting Request User to rxserver.");
+					PSRequestInfo.setRequestInfo(PSRequestInfo.KEY_USER, "rxserver");
+					
 					//If a transition is specified.  Give it a whirl 
 					 if(item.getTransition() != null && !item.getTransition().equals("")){
 						try{	
