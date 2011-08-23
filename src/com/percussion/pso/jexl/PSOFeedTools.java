@@ -195,4 +195,16 @@ public class PSOFeedTools extends PSJexlUtilBase implements IPSJexlExpression {
 			 return folder;
 	 }
 	 
+	 @IPSJexlMethod(description="Sends an email to the specified Workflow role",
+			 params ={@IPSJexlParam(name="to_line", description="Who gets the email"),
+			 @IPSJexlParam(name="cc_line", description="Who gets the email"),
+			 @IPSJexlParam(name="subject", description="The role that gets the email"),
+			 @IPSJexlParam(name="body", description="The role that gets the email")			 
+	 	}) 
+	 public void sendEmail(String to_line, String cc_line, String subject, String body){
+		 //TODO: Code me
+	 }
+	 
+	 
+	 
 	}
