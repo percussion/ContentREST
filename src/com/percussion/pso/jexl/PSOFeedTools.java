@@ -10,11 +10,23 @@
 package com.percussion.pso.jexl;
 
 import java.io.IOException;
+import java.io.FileInputStream;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
+
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.Message;
+
+import com.percussion.extension.PSExtensionException;
 
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.net.URLCodec;
@@ -24,6 +36,8 @@ import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import org.w3c.tidy.ParserImpl.ParseInline;
 
 import com.percussion.extension.IPSJexlExpression;
 import com.percussion.extension.IPSJexlMethod;
@@ -43,6 +57,7 @@ import com.sun.syndication.io.FeedException;
 import com.sun.syndication.io.SyndFeedInput;
 import com.sun.syndication.io.XmlReader;
 
+import com.percussion.server.PSServer;
 /***
  * Provides tools to work with Feeds such as RSS or Atom
  * @author natechadwick
@@ -205,10 +220,59 @@ public class PSOFeedTools extends PSJexlUtilBase implements IPSJexlExpression {
 			 @IPSJexlParam(name="subject", description="The role that gets the email"),
 			 @IPSJexlParam(name="body", description="The role that gets the email")			 
 	 	}) 
-	 public void sendEmail(String to_line, String cc_line, String subject, String body){
-		 //TODO: Code me
+	 public void sendEmail(String to_line, String cc_line, String subject, String body ){		 
+
+	
+	try
+	{
+		 String m_smtpHost = null;
+		 String test = null;
+		 Properties rxconfigProps = new Properties();
+
+		 Date dateNow = new Date();
+     	 SimpleDateFormat presentDate = new SimpleDateFormat("yyyy-MM-dd");
+     	 StringBuilder systemDate = new StringBuilder(presentDate.format(dateNow));
+     	// Date date = Date.parse(systemDate.toString());
+		 
+     	// rxconfigProps.load(new FileInputStream("rxconfig/Workflow/rxworkflow.properties"));
+		 String propFile = PSServer.getRxFile(PSServer.BASE_CONFIG_DIR + "/rxconfig/Workflow/rxworkflow.properties");
+		 String host = rxconfigProps.getProperty("RX_SERVER_HOST_NOTIFICATION");
+         String sPort = rxconfigProps.getProperty("RX_SERVER_PORT_NOTIFICATION");
+         String smtp_Host = rxconfigProps.getProperty("SMTP_HOST");
+         String domain = rxconfigProps.getProperty("MAIL_DOMAIN");
+         int port = Integer.parseInt(sPort);
+         
+         InternetAddress m_From = new InternetAddress("anvitha_ganesh@precussion.com");
+         InternetAddress m_To = new InternetAddress(to_line);
+         InternetAddress m_Cc = new InternetAddress(cc_line);
+         
+         //Doubt abt props being null
+         Properties props = System.getProperties();
+         props.put("mail.smtp.host", smtp_Host);
+         Session session = Session.getDefaultInstance(props);
+         MimeMessage message = new MimeMessage(session);
+         
+         message.setHeader("Testing", test);
+         message.addRecipient(javax.mail.Message.RecipientType.TO, m_To);
+         message.setFrom(m_From);
+         message.addRecipient(javax.mail.Message.RecipientType.CC, m_Cc);
+         message.setSubject(subject);
+         //message.setSentDate(systemDate);
+         
+         String m_Body = "";
+         StringBuffer buffer = new StringBuffer();
+         buffer.append("Hi \n");
+         buffer.append(body);
+         buffer.append("\n\n");
+         m_Body = buffer.toString();
+         
+         message.setText(m_Body);
+         Transport.send(message);
+	  }
+	
+	catch(Exception e){
+		log.error(e);
+	}
+	
 	 }
-	 
-	 
-	 
 	}

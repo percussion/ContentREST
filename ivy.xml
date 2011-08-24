@@ -34,6 +34,8 @@
 		<!-- Supporting Libraries for the Feed Tools -->
 		<dependency org="rome" name="rome" rev="1.0" conf="test->default" />
 	    <dependency org="rome" name="modules" rev="0.3.2" conf="test->default" />
+		<dependency org="javax.mail" name="mail" rev="1.4" conf="test->default" />
+		<dependency org="javax.jcr" name="jcr" rev="1.0" conf="test->default" />
 	    
 		<!--  Adding Dependency for Toolkit -->
 		<dependency org="percussion" name="pso-toolkit" rev="6.7" conf="default" />
@@ -57,6 +59,7 @@
 			<dependency org="objenesis" name="objenesis" rev="1.0"
 				conf="test->*" />
 			<dependency org="jaxen" name="jaxen" rev="1.1" conf="default" />
+			 
 	
 		-->
 	</dependencies>
