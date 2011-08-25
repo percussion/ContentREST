@@ -77,8 +77,6 @@
 	<classpathentry kind="lib" path="lib/modules.jar"/>
 	<classpathentry kind="lib" path="lib/rome.jar"/>
 	<classpathentry kind="lib" path="lib/tagsoup.jar"/>
-	<classpathentry kind="lib" path="C:/j2sdkee1.3.1/lib/j2ee.jar"/>
-	<classpathentry kind="lib" path="C:/Users/anvithaganesh/Downloads/javamail-1.4.3/javamail-1.4.3/lib/mailapi.jar"/>
-	<classpathentry kind="lib" path="C:/Users/anvithaganesh/Downloads/javamail-1.4.3/javamail-1.4.3/mail.jar"/>
+	<classpathentry kind="lib" path="ivylib/mail.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
