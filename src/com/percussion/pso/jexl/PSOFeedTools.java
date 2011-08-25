@@ -242,29 +242,30 @@ public class PSOFeedTools extends PSJexlUtilBase implements IPSJexlExpression {
          String domain = rxconfigProps.getProperty("MAIL_DOMAIN");
          int port = Integer.parseInt(sPort);
          
-         InternetAddress m_From = new InternetAddress("anvitha_ganesh@precussion.com");
+         InternetAddress m_From = new InternetAddress("anvitha.vg5@aol.com");
          InternetAddress m_To = new InternetAddress(to_line);
          InternetAddress m_Cc = new InternetAddress(cc_line);
          
          //Doubt abt props being null
          Properties props = System.getProperties();
-         props.put("mail.smtp.host", smtp_Host);
-         Session session = Session.getDefaultInstance(props);
-         MimeMessage message = new MimeMessage(session);
-         
-         message.setHeader("Testing", test);
-         message.addRecipient(javax.mail.Message.RecipientType.TO, m_To);
+         props.put("mail.host", host);
+         props.put("mail.transport.protocol", smtp_Host);
+         Session session = Session.getDefaultInstance(props, null);
+         Message message = new MimeMessage(session);
+        
          message.setFrom(m_From);
+         message.addRecipient(javax.mail.Message.RecipientType.TO, m_To);
          message.addRecipient(javax.mail.Message.RecipientType.CC, m_Cc);
          message.setSubject(subject);
+         
          //message.setSentDate(systemDate);
          
-         String m_Body = "";
-         StringBuffer buffer = new StringBuffer();
+         String m_Body = "testing hii test";
+         /*StringBuffer buffer = new StringBuffer();
          buffer.append("Hi \n");
          buffer.append(body);
          buffer.append("\n\n");
-         m_Body = buffer.toString();
+         m_Body = buffer.toString(); */
          
          message.setText(m_Body);
          Transport.send(message);
