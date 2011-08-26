@@ -222,6 +222,7 @@ public class PSOFeedTools extends PSJexlUtilBase implements IPSJexlExpression {
 	 	}) 
 	 public void sendEmail(String to_line, String cc_line, String subject, String body ){		 
 
+		 log.debug(" Inside send email !!!!!!!!!!!! ");
 	
 	try
 	{
@@ -229,9 +230,9 @@ public class PSOFeedTools extends PSJexlUtilBase implements IPSJexlExpression {
 		 String test = null;
 		 Properties rxconfigProps = new Properties();
 
-		 Date dateNow = new Date();
-     	 SimpleDateFormat presentDate = new SimpleDateFormat("yyyy-MM-dd");
-     	 StringBuilder systemDate = new StringBuilder(presentDate.format(dateNow));
+		 //Date dateNow = new Date();
+     	 //SimpleDateFormat presentDate = new SimpleDateFormat("yyyy-MM-dd");
+     	 //StringBuilder systemDate = new StringBuilder(presentDate.format(dateNow));
      	// Date date = Date.parse(systemDate.toString());
 		 
      	// rxconfigProps.load(new FileInputStream("rxconfig/Workflow/rxworkflow.properties"));
@@ -242,7 +243,7 @@ public class PSOFeedTools extends PSJexlUtilBase implements IPSJexlExpression {
          String domain = rxconfigProps.getProperty("MAIL_DOMAIN");
          int port = Integer.parseInt(sPort);
          
-         InternetAddress m_From = new InternetAddress("anvitha.vg5@aol.com");
+         InternetAddress m_From = new InternetAddress("anvitha_ganesh@precussion.com");
          InternetAddress m_To = new InternetAddress(to_line);
          InternetAddress m_Cc = new InternetAddress(cc_line);
          
@@ -250,7 +251,10 @@ public class PSOFeedTools extends PSJexlUtilBase implements IPSJexlExpression {
          Properties props = System.getProperties();
          props.put("mail.host", host);
          props.put("mail.transport.protocol", smtp_Host);
+         props.put("mail.debug", true);
          Session session = Session.getDefaultInstance(props, null);
+         Transport bus = session.getTransport("smtp");
+         bus.connect(domain, "anvitha_ganesh@precussion.com", "aganesh");
          Message message = new MimeMessage(session);
         
          message.setFrom(m_From);
@@ -267,8 +271,14 @@ public class PSOFeedTools extends PSJexlUtilBase implements IPSJexlExpression {
          buffer.append("\n\n");
          m_Body = buffer.toString(); */
          
+        
          message.setText(m_Body);
-         Transport.send(message);
+         message.saveChanges();
+         bus.send(message);
+         bus.close();
+         
+         
+         //Transport.send(message);
 	  }
 	
 	catch(Exception e){
