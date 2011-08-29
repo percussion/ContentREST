@@ -227,31 +227,31 @@ public class PSOFeedTools extends PSJexlUtilBase implements IPSJexlExpression {
 	try
 	{
 		String m_smtpHost = null;
-		//Properties rxconfigProps = new Properties();
+		Properties rxconfigProps = new Properties();
 		
-		//rxconfigProps.load(new FileInputStream("rxconfig/Workflow/rxworkflow.properties"));
+		rxconfigProps.load(new FileInputStream("rxconfig/Workflow/rxworkflow.properties"));
 		 
-		//String host = rxconfigProps.getProperty("RX_SERVER_HOST_NOTIFICATION");
+		String host = rxconfigProps.getProperty("RX_SERVER_HOST_NOTIFICATION");
         //String sPort = rxconfigProps.getProperty("RX_SERVER_PORT_NOTIFICATION");
-        //String smtp_Host = rxconfigProps.getProperty("SMTP_HOST");
+        String smtp_Host = rxconfigProps.getProperty("SMTP_HOST");
         //String domain = rxconfigProps.getProperty("MAIL_DOMAIN");
 		
-		String host = "smtp.mail.yahoo.com";
-        String from = "riddles_quake@yahoo.co.in";
-        Properties props = System.getProperties();
-        props.put("mail.smtp.host", host);
-        props.put("mail.smtp.user", from);
-        props.put("mail.smtp.password", "");
-        props.put("mail.smtp.port", "587");
-        props.put("mail.smtp.auth", "true");
-        
-        //String from = "anvitha_ganesh@percussion.com";
+		//String host = "smtp.mail.yahoo.com";
+        //String from = "riddles_quake@yahoo.co.in";
         //Properties props = System.getProperties();
-        //props.put("mail.smtp.host", "10.10.10.8");
+        //props.put("mail.smtp.host", host);
         //props.put("mail.smtp.user", from);
-        //props.put("mail.smtp.password", "aganesh");
-       // props.put("mail.smtp.port", sPort);
+        //props.put("mail.smtp.password", "");
+        //props.put("mail.smtp.port", "587");
         //props.put("mail.smtp.auth", "true");
+        
+        String from = "anvitha_ganesh@percussion.com";
+        Properties props = System.getProperties();
+        props.put("mail.smtp.host", smtp_Host);
+        props.put("mail.smtp.user", from);
+        props.put("mail.smtp.password", "aganesh");
+        //props.put("mail.smtp.port", sPort);
+        props.put("mail.smtp.auth", "true");
 
         Session session = Session.getDefaultInstance(props, null);
         MimeMessage message = new MimeMessage(session);
@@ -266,8 +266,8 @@ public class PSOFeedTools extends PSJexlUtilBase implements IPSJexlExpression {
         message.setSubject(subject);
         message.setText(body);
         Transport transport = session.getTransport("smtp");
-      transport.connect("smtp.mail.yahoo.co.in", "riddles_quake@yahoo.co.in", "");
-        //transport.connect("percussion.com", "anvitha_ganesh@percussion.com", "aganesh");
+      //transport.connect("smtp.mail.yahoo.co.in", "riddles_quake@yahoo.co.in", "");
+        transport.connect("percussion.com", "Anvitha Ganesh/Percussion@Percussion", "aganesh");
         transport.sendMessage(message, message.getAllRecipients());
         transport.close();      
          
