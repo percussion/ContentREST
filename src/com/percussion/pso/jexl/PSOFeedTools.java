@@ -266,8 +266,7 @@ public class PSOFeedTools extends PSJexlUtilBase implements IPSJexlExpression {
         message.setSubject(subject);
         message.setText(body);
         Transport transport = session.getTransport("smtp");
-      //transport.connect("smtp.mail.yahoo.co.in", "riddles_quake@yahoo.co.in", "");
-        transport.connect("percussion.com", "Anvitha Ganesh/Percussion@Percussion", "aganesh");
+        transport.connect("percussion.com", "anvitha_ganesh@percussion.com", "aganesh");
         transport.sendMessage(message, message.getAllRecipients());
         transport.close();      
          
