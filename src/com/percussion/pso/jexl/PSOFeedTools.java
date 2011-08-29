@@ -226,59 +226,51 @@ public class PSOFeedTools extends PSJexlUtilBase implements IPSJexlExpression {
 	
 	try
 	{
-		 String m_smtpHost = null;
-		 String test = null;
-		 Properties rxconfigProps = new Properties();
-
-		 //Date dateNow = new Date();
-     	 //SimpleDateFormat presentDate = new SimpleDateFormat("yyyy-MM-dd");
-     	 //StringBuilder systemDate = new StringBuilder(presentDate.format(dateNow));
-     	// Date date = Date.parse(systemDate.toString());
+		String m_smtpHost = null;
+		//Properties rxconfigProps = new Properties();
+		
+		//rxconfigProps.load(new FileInputStream("rxconfig/Workflow/rxworkflow.properties"));
 		 
-     	// rxconfigProps.load(new FileInputStream("rxconfig/Workflow/rxworkflow.properties"));
-		 String propFile = PSServer.getRxFile(PSServer.BASE_CONFIG_DIR + "/rxconfig/Workflow/rxworkflow.properties");
-		 String host = rxconfigProps.getProperty("RX_SERVER_HOST_NOTIFICATION");
-         String sPort = rxconfigProps.getProperty("RX_SERVER_PORT_NOTIFICATION");
-         String smtp_Host = rxconfigProps.getProperty("SMTP_HOST");
-         String domain = rxconfigProps.getProperty("MAIL_DOMAIN");
-         int port = Integer.parseInt(sPort);
-         
-         InternetAddress m_From = new InternetAddress("anvitha_ganesh@precussion.com");
-         InternetAddress m_To = new InternetAddress(to_line);
-         InternetAddress m_Cc = new InternetAddress(cc_line);
-         
-         //Doubt abt props being null
-         Properties props = System.getProperties();
-         props.put("mail.host", host);
-         props.put("mail.transport.protocol", smtp_Host);
-         props.put("mail.debug", true);
-         Session session = Session.getDefaultInstance(props, null);
-         Transport bus = session.getTransport("smtp");
-         bus.connect(domain, "anvitha_ganesh@precussion.com", "aganesh");
-         Message message = new MimeMessage(session);
+		//String host = rxconfigProps.getProperty("RX_SERVER_HOST_NOTIFICATION");
+        //String sPort = rxconfigProps.getProperty("RX_SERVER_PORT_NOTIFICATION");
+        //String smtp_Host = rxconfigProps.getProperty("SMTP_HOST");
+        //String domain = rxconfigProps.getProperty("MAIL_DOMAIN");
+		
+		String host = "smtp.mail.yahoo.com";
+        String from = "riddles_quake@yahoo.co.in";
+        Properties props = System.getProperties();
+        props.put("mail.smtp.host", host);
+        props.put("mail.smtp.user", from);
+        props.put("mail.smtp.password", "");
+        props.put("mail.smtp.port", "587");
+        props.put("mail.smtp.auth", "true");
         
-         message.setFrom(m_From);
-         message.addRecipient(javax.mail.Message.RecipientType.TO, m_To);
-         message.addRecipient(javax.mail.Message.RecipientType.CC, m_Cc);
-         message.setSubject(subject);
-         
-         //message.setSentDate(systemDate);
-         
-         String m_Body = "testing hii test";
-         /*StringBuffer buffer = new StringBuffer();
-         buffer.append("Hi \n");
-         buffer.append(body);
-         buffer.append("\n\n");
-         m_Body = buffer.toString(); */
-         
+        //String from = "anvitha_ganesh@percussion.com";
+        //Properties props = System.getProperties();
+        //props.put("mail.smtp.host", "10.10.10.8");
+        //props.put("mail.smtp.user", from);
+        //props.put("mail.smtp.password", "aganesh");
+       // props.put("mail.smtp.port", sPort);
+        //props.put("mail.smtp.auth", "true");
+
+        Session session = Session.getDefaultInstance(props, null);
+        MimeMessage message = new MimeMessage(session);
+        message.setFrom(new InternetAddress(from));
+
+        InternetAddress m_To = new InternetAddress(to_line);
+        message.addRecipient(javax.mail.Message.RecipientType.TO, m_To);
         
-         message.setText(m_Body);
-         message.saveChanges();
-         bus.send(message);
-         bus.close();
+        InternetAddress m_Cc = new InternetAddress(cc_line);
+        message.addRecipient(javax.mail.Message.RecipientType.CC, m_Cc);
+        
+        message.setSubject(subject);
+        message.setText(body);
+        Transport transport = session.getTransport("smtp");
+      transport.connect("smtp.mail.yahoo.co.in", "riddles_quake@yahoo.co.in", "");
+        //transport.connect("percussion.com", "anvitha_ganesh@percussion.com", "aganesh");
+        transport.sendMessage(message, message.getAllRecipients());
+        transport.close();      
          
-         
-         //Transport.send(message);
 	  }
 	
 	catch(Exception e){
