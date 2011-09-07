@@ -20,8 +20,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import javax.mail.Address;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.Message;
@@ -211,65 +213,57 @@ public class PSOFeedTools extends PSJexlUtilBase implements IPSJexlExpression {
 	 }
 	 
 	 
+	 private List<InternetAddress> splitEmailAddresses(final String list) throws AddressException{
+		
+		 ArrayList<InternetAddress> ret = new ArrayList<InternetAddress>();
+		 
+		 if(list.contains(","))
+         {
+        	 String to_addresses[] = list.split(",");
+         
+        	 for(String email : to_addresses){
+        		 ret.add(new InternetAddress(email));
+        	 }
+         }else{
+        	 ret.add(new InternetAddress(list));
+         }
+        
+		 return ret;
+	 }
 	 
 	 
-	 
-	 @IPSJexlMethod(description="Sends an email to the specified Workflow role",
-			 params ={@IPSJexlParam(name="to_line", description="Who gets the email"),
-			 @IPSJexlParam(name="cc_line", description="Who gets the email"),
-			 @IPSJexlParam(name="subject", description="The role that gets the email"),
-			 @IPSJexlParam(name="body", description="The role that gets the email")			 
+	 @IPSJexlMethod(description="Sends an email via velocity.",
+			 params ={@IPSJexlParam(name="from_line", description="Who the email is from."),
+			 @IPSJexlParam(name="to_line", description="Comma seperated list of email addresses to send message to."),
+			 @IPSJexlParam(name="cc_line", description="Comma seperated list of email addresses to be carbon copied on the message."),
+			 @IPSJexlParam(name="bcc_line", description="Comma seperated list of email addresses to be blind copied on the message."),
+			 @IPSJexlParam(name="subject", description="The subject of the message."),
+			 @IPSJexlParam(name="body", description="The text of the message.")			 
 	 	}) 
-	 public void sendEmail(String to_line, String cc_line, String subject, String body ){		 
-
-		 log.debug(" Inside send email !!!!!!!!!!!! ");
+	 public void sendEmail(String from_line, String to_line, String cc_line, String bcc_line, String subject, String body ){		 
 	
 	try
 	{
-		String m_smtpHost = null;
-		Properties rxconfigProps = new Properties();
-		
-		rxconfigProps.load(new FileInputStream("rxconfig/Workflow/rxworkflow.properties"));
-		 
-		String host = rxconfigProps.getProperty("RX_SERVER_HOST_NOTIFICATION");
-        //String sPort = rxconfigProps.getProperty("RX_SERVER_PORT_NOTIFICATION");
-        String smtp_Host = rxconfigProps.getProperty("SMTP_HOST");
-        //String domain = rxconfigProps.getProperty("MAIL_DOMAIN");
-		
-		//String host = "smtp.mail.yahoo.com";
-        //String from = "riddles_quake@yahoo.co.in";
-        //Properties props = System.getProperties();
-        //props.put("mail.smtp.host", host);
-        //props.put("mail.smtp.user", from);
-        //props.put("mail.smtp.password", "");
-        //props.put("mail.smtp.port", "587");
-        //props.put("mail.smtp.auth", "true");
-        
-        String from = "anvitha_ganesh@percussion.com";
-        Properties props = System.getProperties();
-        props.put("mail.smtp.host", smtp_Host);
-        props.put("mail.smtp.user", from);
-        props.put("mail.smtp.password", "aganesh");
-        //props.put("mail.smtp.port", sPort);
-        props.put("mail.smtp.auth", "true");
+		 Properties rxconfigProps = new Properties();
 
-        Session session = Session.getDefaultInstance(props, null);
-        MimeMessage message = new MimeMessage(session);
-        message.setFrom(new InternetAddress(from));
-
-        InternetAddress m_To = new InternetAddress(to_line);
-        message.addRecipient(javax.mail.Message.RecipientType.TO, m_To);
-        
-        InternetAddress m_Cc = new InternetAddress(cc_line);
-        message.addRecipient(javax.mail.Message.RecipientType.CC, m_Cc);
-        
-        message.setSubject(subject);
-        message.setText(body);
-        Transport transport = session.getTransport("smtp");
-        transport.connect("percussion.com", "anvitha_ganesh@percussion.com", "aganesh");
-        transport.sendMessage(message, message.getAllRecipients());
-        transport.close();      
+		 String propFile = PSServer.getRxFile(PSServer.BASE_CONFIG_DIR + "/rxconfig/Workflow/rxworkflow.properties");
+		 rxconfigProps.load(new FileInputStream(propFile));
+	     String smtp_host = rxconfigProps.getProperty("SMTP_HOST");
          
+         
+         Properties props = System.getProperties();
+         props.put("mail.host", smtp_host);
+         props.put("mail.transport.protocol", "SMTP");
+         Session session = Session.getDefaultInstance(props, null);
+         Message message = new MimeMessage(session);
+
+         message.setFrom(new InternetAddress(from_line));
+         message.addRecipients(Message.RecipientType.TO, (Address[])splitEmailAddresses(to_line).toArray());
+		 message.addRecipients(Message.RecipientType.CC, (Address[])splitEmailAddresses(cc_line).toArray());
+		 message.addRecipients(Message.RecipientType.BCC, (Address[])splitEmailAddresses(bcc_line).toArray());
+         message.setSubject(subject);
+         message.setText(body);
+         Transport.send(message);
 	  }
 	
 	catch(Exception e){
