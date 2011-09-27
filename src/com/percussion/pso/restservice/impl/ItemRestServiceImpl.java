@@ -93,8 +93,6 @@ import com.percussion.cms.objectstore.PSObjectAclEntry;
 import com.percussion.cms.objectstore.PSRelationshipFilter;
 import com.percussion.cms.objectstore.PSTextValue;
 import com.percussion.cms.objectstore.server.PSBinaryFileValue;
-import com.percussion.cms.objectstore.server.*;
-//import com.percussion.cms.objectstore.server.PSPurgableFileValue;
 import com.percussion.cms.objectstore.server.PSRelationshipProcessor;
 import com.percussion.data.PSDataExtractionException;
 import com.percussion.data.PSInternalRequestCallException;
@@ -104,7 +102,6 @@ import com.percussion.design.objectstore.PSLocator;
 import com.percussion.design.objectstore.PSRelationship;
 import com.percussion.design.objectstore.PSRelationshipConfig;
 import com.percussion.design.objectstore.PSRelationshipSet;
-import com.percussion.design.objectstore.PSWorkflow;
 import com.percussion.pso.restservice.IItemRestService;
 import com.percussion.pso.restservice.exception.ItemRestException;
 import com.percussion.pso.restservice.exception.ItemRestNotModifiedException;
@@ -162,7 +159,6 @@ import com.percussion.services.sitemgr.PSSiteManagerLocator;
 import com.percussion.services.workflow.IPSWorkflowService;
 import com.percussion.services.workflow.PSWorkflowServiceLocator;
 import com.percussion.util.IPSHtmlParameters;
-import com.percussion.util.PSPurgableFileInputStream;
 import com.percussion.util.PSPurgableTempFile;
 import com.percussion.utils.guid.IPSGuid;
 import com.percussion.utils.request.PSRequestInfo;
@@ -186,9 +182,6 @@ public class ItemRestServiceImpl implements IItemRestService {
 
 	private static final int PAGE_SIZE = 1000;
 
-	private static final String HTTP_IFMODIFIED="If-Modified-Since";
-	private static final String HTTP_IFNONEMATCH="If-None-Match";
-	
 	/**
 	 * Logger for this class
 	 */

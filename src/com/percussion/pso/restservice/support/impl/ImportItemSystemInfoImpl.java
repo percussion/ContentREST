@@ -58,9 +58,7 @@ public class ImportItemSystemInfoImpl implements IImportItemSystemInfo {
 	 * Logger for this class
 	 */
 	private static final Log log = LogFactory.getLog(ImportItemSystemInfoImpl.class);
-	
 
-	
 	
 	/**
 	 * Field contentTypeNameMap.

@@ -47,6 +47,7 @@ import com.percussion.extension.IPSJexlParam;
 import com.percussion.extension.PSJexlUtilBase;
 import com.percussion.pso.syndication.PSSynFeedProxy;
 import com.percussion.pso.utils.HTTPProxyClientConfig;
+import com.percussion.pso.utils.PSOEmailUtils;
 import com.sun.syndication.feed.module.Module;
 import com.sun.syndication.feed.module.content.ContentModule;
 import com.sun.syndication.feed.module.mediarss.MediaEntryModule;
@@ -211,26 +212,7 @@ public class PSOFeedTools extends PSJexlUtilBase implements IPSJexlExpression {
 		 else
 			 return folder;
 	 }
-	 
-	 
-	 private List<InternetAddress> splitEmailAddresses(final String list) throws AddressException{
-		
-		 ArrayList<InternetAddress> ret = new ArrayList<InternetAddress>();
-		 
-		 if(list.contains(","))
-         {
-        	 String to_addresses[] = list.split(",");
-         
-        	 for(String email : to_addresses){
-        		 ret.add(new InternetAddress(email));
-        	 }
-         }else{
-        	 ret.add(new InternetAddress(list));
-         }
-        
-		 return ret;
-	 }
-	 
+	  
 	 
 	 @IPSJexlMethod(description="Sends an email via velocity.",
 			 params ={@IPSJexlParam(name="from_line", description="Who the email is from."),
@@ -242,33 +224,7 @@ public class PSOFeedTools extends PSJexlUtilBase implements IPSJexlExpression {
 	 	}) 
 	 public void sendEmail(String from_line, String to_line, String cc_line, String bcc_line, String subject, String body ){		 
 	
-	try
-	{
-		 Properties rxconfigProps = new Properties();
-
-		 String propFile = PSServer.getRxFile(PSServer.BASE_CONFIG_DIR + "/rxconfig/Workflow/rxworkflow.properties");
-		 rxconfigProps.load(new FileInputStream(propFile));
-	     String smtp_host = rxconfigProps.getProperty("SMTP_HOST");
-         
-         
-         Properties props = System.getProperties();
-         props.put("mail.host", smtp_host);
-         props.put("mail.transport.protocol", "SMTP");
-         Session session = Session.getDefaultInstance(props, null);
-         Message message = new MimeMessage(session);
-
-         message.setFrom(new InternetAddress(from_line));
-         message.addRecipients(Message.RecipientType.TO, (Address[])splitEmailAddresses(to_line).toArray());
-		 message.addRecipients(Message.RecipientType.CC, (Address[])splitEmailAddresses(cc_line).toArray());
-		 message.addRecipients(Message.RecipientType.BCC, (Address[])splitEmailAddresses(bcc_line).toArray());
-         message.setSubject(subject);
-         message.setText(body);
-         Transport.send(message);
-	  }
-	
-	catch(Exception e){
-		log.error(e);
-	}
+		 PSOEmailUtils.sendEmail(from_line, to_line, cc_line, bcc_line, subject, body);
 	
 	 }
 	}

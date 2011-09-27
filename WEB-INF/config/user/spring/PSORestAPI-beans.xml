@@ -1,13 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-  Copyright © 2005-2011 Percussion Software.
-  
-  Permission is hereby granted, free of charge, to use, copy and create derivative works of this software and associated documentation files (the “Software”) for internal use only and only in connection with products from Percussion Software. 
-  
-  The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-  
-  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL PERCUSSION SOFTWARE BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
--->
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:jaxrs="http://cxf.apache.org/jaxrs" xmlns:jaxws="http://cxf.apache.org/jaxws"
@@ -69,11 +60,21 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 			</list>
 		</property>
 	</bean>
-
+	<!-- This needs work, need to figure out how to specify specific email events that code can wire itself to -->
 	<bean id="psoImportSystemInfo" class="org.springframework.aop.framework.ProxyFactoryBean">
 		<property name="target">
-			<bean
-				class="com.percussion.pso.restservice.support.impl.ImportItemSystemInfoImpl" />
+			<bean class="com.percussion.pso.restservice.support.impl.ImportItemSystemInfoImpl" >
+				<property name="sys_email_from"></property>
+				<property name="sys_email_to"></property>
+				<property name="email_level"></property>
+				<!-- Names of velocity templates that format the email message, these are run by invoking the assembler via PSOEmailUtils.sendNotification -->
+				<property name="email_velo_template_names">
+					<list>
+						<value>importChangeNotificationEmail</value>
+						<value>unexpectedExceptionNotificationEmail</value>
+					</list>
+				</property>
+			</bean>
 		</property>
 		<property name="interceptorNames">
 			<list>
