@@ -193,6 +193,7 @@
 				</fileset>
 				<fileset dir="${rhythmyx.home}/AppServer/server/rx/lib">
 					<include name="javax.servlet.jar" />
+					<include name="commons-collections*.jar" />
 				</fileset>
 			</classpath>
 		</java>
