@@ -64,16 +64,16 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 	<bean id="psoImportSystemInfo" class="org.springframework.aop.framework.ProxyFactoryBean">
 		<property name="target">
 			<bean class="com.percussion.pso.restservice.support.impl.ImportItemSystemInfoImpl" >
-				<property name="sys_email_from"></property>
+	<!--  			<property name="sys_email_from"></property>
 				<property name="sys_email_to"></property>
 				<property name="email_level"></property>
-				<!-- Names of velocity templates that format the email message, these are run by invoking the assembler via PSOEmailUtils.sendNotification -->
-				<property name="email_velo_template_names">
+		        <property name="email_velo_template_names">
 					<list>
 						<value>importChangeNotificationEmail</value>
 						<value>unexpectedExceptionNotificationEmail</value>
 					</list>
 				</property>
+	-->
 			</bean>
 		</property>
 		<property name="interceptorNames">
