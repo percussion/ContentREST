@@ -34,16 +34,17 @@
 	<classpathentry kind="lib" path="ivylib/jmock-junit4.jar"/>
 	<classpathentry kind="lib" path="ivylib/jmock.jar"/>
 	<classpathentry kind="lib" path="ivylib/jsoup.jar"/>
-	<classpathentry kind="lib" path="ivylib/jsr311-api.jar"/>
+	<classpathentry kind="lib" path="ivylib/jsr311-api.jar" sourcepath="ivylib/jsr311-api.jar"/>
 	<classpathentry kind="lib" path="ivylib/jta.jar"/>
 	<classpathentry kind="lib" path="ivylib/junit.jar"/>
+	<classpathentry kind="lib" path="ivylib/mail.jar"/>
 	<classpathentry kind="lib" path="ivylib/modules.jar"/>
 	<classpathentry kind="lib" path="ivylib/percbeans.jar"/>
 	<classpathentry kind="lib" path="ivylib/PSOToolkit.jar"/>
 	<classpathentry kind="lib" path="ivylib/rhythmyx.jar"/>
 	<classpathentry kind="lib" path="ivylib/rome.jar"/>
 	<classpathentry kind="lib" path="ivylib/rxbusiness.jar"/>
-	<classpathentry kind="lib" path="ivylib/rxclient.jar"/>
+	<classpathentry kind="lib" path="ivylib/rxclient.jar" sourcepath="ivylib/rxclient.jar"/>
 	<classpathentry kind="lib" path="ivylib/rxdeployer.jar"/>
 	<classpathentry kind="lib" path="ivylib/rxextensions.jar"/>
 	<classpathentry kind="lib" path="ivylib/rxff.jar"/>
@@ -67,16 +68,7 @@
 	<classpathentry kind="lib" path="ivylib/xml-apis.jar"/>
 	<classpathentry kind="lib" path="ivylib/xmlParserAPIs.jar"/>
 	<classpathentry kind="lib" path="ivylib/xom.jar"/>
-	<classpathentry kind="lib" path="lib/cxf-bundle.jar"/>
 	<classpathentry kind="lib" path="lib/jai_codec.jar"/>
 	<classpathentry kind="lib" path="lib/jai_core.jar"/>
-	<classpathentry kind="lib" path="lib/jaxen.jar"/>
-	<classpathentry kind="lib" path="lib/jdom.jar"/>
-	<classpathentry kind="lib" path="lib/jsoup.jar"/>
-	<classpathentry kind="lib" path="lib/jsr311-api.jar"/>
-	<classpathentry kind="lib" path="lib/modules.jar"/>
-	<classpathentry kind="lib" path="lib/rome.jar"/>
-	<classpathentry kind="lib" path="lib/tagsoup.jar"/>
-	<classpathentry kind="lib" path="ivylib/mail.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -53,7 +53,7 @@ public class PSOEmailUtils {
 	 
 	 /***
 	  * Sends an email using the specified parameters and the SMTP configuration
-	  * defined in the system /rxconfig/Workflow/rxworkflow.properties file. 
+	  * defined in the system /Workflow/rxworkflow.properties file,(the default) or some oether properties file
 	  * 
 	  * @param from_line
 	  * @param to_line
@@ -61,28 +61,33 @@ public class PSOEmailUtils {
 	  * @param bcc_line
 	  * @param subject
 	  * @param body
+	  * @param propsFileName
 	  */
 	public static void sendEmail( String from_line, String to_line, String cc_line, String bcc_line, String subject, String body)
 	{
 		try
 		{
-			 Properties rxconfigProps = new Properties();
-	
-			 String propFile = PSServer.getRxFile(PSServer.BASE_CONFIG_DIR + "/rxconfig/Workflow/rxworkflow.properties");
+			String propFile = null;
+			
+			Properties rxconfigProps = new Properties();
+			
+			propFile = PSServer.getRxFile(PSServer.BASE_CONFIG_DIR + "/Workflow/rxworkflow.properties");
+
 			 rxconfigProps.load(new FileInputStream(propFile));
-		     String smtp_host = rxconfigProps.getProperty("SMTP_HOST");
-	         
-	         
+			 
+		     String smtp_host = rxconfigProps.getProperty("SMTP_HOST");		     
 	         Properties props = System.getProperties();
 	         props.put("mail.host", smtp_host);
 	         props.put("mail.transport.protocol", "SMTP");
 	         Session session = Session.getDefaultInstance(props, null);
+	         
 	         Message message = new MimeMessage(session);
-	
-	         message.setFrom(new InternetAddress(from_line));
-	         message.addRecipients(Message.RecipientType.TO, (Address[])splitEmailAddresses(to_line).toArray());
-			 message.addRecipients(Message.RecipientType.CC, (Address[])splitEmailAddresses(cc_line).toArray());
-			 message.addRecipients(Message.RecipientType.BCC, (Address[])splitEmailAddresses(bcc_line).toArray());
+	         message.setFrom(new InternetAddress(from_line));	         
+	         message.addRecipients(Message.RecipientType.TO, (Address[])splitEmailAddresses(to_line).toArray(new Address[0]));
+			 if(cc_line != null)
+	            message.addRecipients(Message.RecipientType.CC, (Address[])splitEmailAddresses(cc_line).toArray(new Address[0]));
+			 if(bcc_line != null)
+				message.addRecipients(Message.RecipientType.BCC, (Address[])splitEmailAddresses(bcc_line).toArray(new Address[0]));
 	         message.setSubject(subject);
 	         message.setText(body);
 	         Transport.send(message);
@@ -92,4 +97,7 @@ public class PSOEmailUtils {
 			log.error(e);
 	  }
 	}
+	
+	
+	
 }

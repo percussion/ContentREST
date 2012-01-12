@@ -33,6 +33,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -132,9 +133,11 @@ import com.percussion.pso.restservice.support.IImportItemSystemInfo;
 import com.percussion.pso.restservice.support.ImportItemSystemInfoLocator;
 import com.percussion.pso.restservice.utils.ItemServiceHelper;
 import com.percussion.pso.utils.HTTPProxyClientConfig;
+import com.percussion.pso.utils.PSOEmailUtils;
 import com.percussion.server.IPSRequestContext;
 import com.percussion.server.PSRequest;
 import com.percussion.server.PSRequestContext;
+import com.percussion.server.PSServer;
 import com.percussion.server.PSUserSession;
 import com.percussion.server.webservices.PSServerFolderProcessor;
 import com.percussion.services.assembly.IPSAssemblyItem;
@@ -181,6 +184,11 @@ import com.percussion.webservices.system.PSSystemWsLocator;
 public class ItemRestServiceImpl implements IItemRestService {
 
 	private static final int PAGE_SIZE = 1000;
+	//private static final String FEED_STATUS_RAN = "FEED RAN SUCCESSFULLY";
+	//private static final String FEED_STATUS_NO_UPDATE = "FEED NOT UPDATED";
+	private static final String FEED_STATUS_UPDATED = "RAN SUCCESSFULLY";
+	private static final String FEED_STATUS_ERROR = "UPDATE FAILED";
+	private static final String EMAIL_NOTIFICATION_PROPS = "emailnotification.properties";
 
 	/**
 	 * Logger for this class
@@ -231,7 +239,10 @@ public class ItemRestServiceImpl implements IItemRestService {
 	 * Field uri.
 	 */
 	private UriInfo uri;
-
+	/**
+	 * Field emailProps.
+	 */
+	private Properties emailProps; 
 	/**
 	 * Method setUriInfo.
 	 * 
@@ -254,6 +265,7 @@ public class ItemRestServiceImpl implements IItemRestService {
 	 * Initialize service pointers.
 	 */
 	private static void initServices() {
+		
 		
 		if (gmgr == null) 
 			gmgr = PSGuidManagerLocator.getGuidMgr();
@@ -619,6 +631,8 @@ public class ItemRestServiceImpl implements IItemRestService {
 								cws.checkinItems(guids, "Checkin by System");
 							}
 						}
+						
+						log.debug("Getting the summary and revision number");
 			
 
 						if(isEdit){
@@ -636,8 +650,9 @@ public class ItemRestServiceImpl implements IItemRestService {
 						
 					}
 				}
-					
+				    log.debug("Before cws Save psItems");
 					guids = cws.saveItems(psItems, false, false);
+					log.debug("cws psItems Saved");
 					
 					if (guids.size()>0) {
 						id = guids.get(0).getUUID();
@@ -648,20 +663,38 @@ public class ItemRestServiceImpl implements IItemRestService {
 					if (item.getRelationships()!=null) {
 						updateRelationships(item, getRelationships(id, -1, true), id,
 								false);
-					}					
-				
+					}	
+					
+			    log.debug("Before Content is released from Edit");
+			    
+			     
 				if (status != null) {
 					boolean checkInOnly = item.getCheckInOnly() != null && item.getCheckInOnly()? true : false;
+					PSItemStatus ps = status.get(0);	
+					if(ps.getToState() != null){
+					    if (ps.getToState().equals("Quick Edit")){
+					 	      ps.setFromState("Review");
+						      ps.setFromStateId(new Long(2));
+						      status.set(0, ps);
+					     }
+					}
+					else{
+						ps.setFromState("Review");
+						ps.setFromStateId(new Long(2));
+						status.set(0, ps);
+					}
 					cws.releaseFromEdit(status,checkInOnly);
 					
 				} else {
 					cws.checkinItems(guids, "Initial import.");
 				}
+				
+				log.debug("Content released from Edit");
 
 				if(!isEdit){
 					
-					log.debug("Setting Request User to rxserver.");
-					PSRequestInfo.setRequestInfo(PSRequestInfo.KEY_USER, "rxserver");
+					//log.debug("Setting Request User to rxserver.");
+					//PSRequestInfo.setRequestInfo(PSRequestInfo.KEY_USER, "rxserver");
 					
 					//If a transition is specified.  Give it a whirl 
 					 if(item.getTransition() != null && !item.getTransition().equals("")){
@@ -669,9 +702,11 @@ public class ItemRestServiceImpl implements IItemRestService {
 							system.transitionItems(Collections.singletonList(guids.get(0)), item.getTransition());
 						}catch(Exception ex){
 							try{
+								log.debug("Draft Transition failed." + item.getTransition() + " Trying edit transition " +item.getEditTransition() );
 								system.transitionItems(Collections.singletonList(guids.get(0)), item.getEditTransition());
 							}catch(Exception e){
 								log.warn("Unable to transition item using Transition Trigger " + item.getTransition());
+								item.addError(ErrorCode.UNKNOWN_ERROR, "Unable to transition item to " + item.getState());
 							}
 						}
 					}
@@ -682,9 +717,11 @@ public class ItemRestServiceImpl implements IItemRestService {
 							system.transitionItems(Collections.singletonList(guids.get(0)), item.getEditTransition());
 						}catch(Exception e){
 							try{
+								log.debug("Edit Transition failed." + item.getEditTransition()  + " Trying new item transition " + item.getTransition());								
 								system.transitionItems(Collections.singletonList(guids.get(0)), item.getTransition());
 							}catch(Exception ex){
 								log.warn("Unable to transition item using Transition Trigger " + item.getEditTransition());
+								item.addError(ErrorCode.UNKNOWN_ERROR, "Unable to transition item to " + item.getState());
 							}
 						}
 					}
@@ -787,10 +824,13 @@ public class ItemRestServiceImpl implements IItemRestService {
 	@Path("/")
 	@Consumes("text/xml")
 	public Items updateItems(Items items) {
-		for (Item item : items.getItems()) {
-			log.debug("Processing item");
-			item = updateItem(item);
-		}
+		if (items != null)
+			for (Item item : items.getItems()) {
+				log.debug("Processing item");
+				item = updateItem(item);
+			} else {
+				log.warn("Items is null");	
+			}
 		return items;
 	}
 
@@ -1730,7 +1770,7 @@ public class ItemRestServiceImpl implements IItemRestService {
 	private void updateFieldValue(Field field, PSItemField psField)
 	throws FileNotFoundException, IOException, ItemRestException, ItemRestNotModifiedException {
 
-	//	psField.clearValues();
+	psField.clearValues();
 
 		log.debug("updating field " + field.getName());
 
@@ -2154,10 +2194,8 @@ public class ItemRestServiceImpl implements IItemRestService {
 		} catch (Exception e) {
 			items.addError(ErrorCode.ASSEMBLY_ERROR,
 					"Assembly output xml invalid:" + assemblyResult, e);
-		}
-
+		}		
 		return items;
-
 	}
 
 	/**
@@ -2415,8 +2453,13 @@ public class ItemRestServiceImpl implements IItemRestService {
 	@GET
 	@Path("/importfeeds/")
 	public Response updateItems(@QueryParam("debug")boolean debug, @QueryParam("content_type")String content_type) {
+
+		log.debug("Invoked updateItems");
+		
 		initServices();
 
+		log.debug("Returned From InitServices");
+		
 		log.debug("Feed Content Type is " + content_type);
 
 		PagedResult ret = new PagedResult();
@@ -2508,6 +2551,10 @@ public class ItemRestServiceImpl implements IItemRestService {
 			Field importFeedItems = feedDef.getField("importFeedItems");
 			Field targetEditTransition = feedDef.getField("targetEditTransition");
 			
+			if (feedFormat == null) {	//If allowed, it's archived. So don't process, but don't add to error list when caught.			
+				log.debug("FeedFormat is not defined for content ID " + sys_contentid);
+				throw new ArchivedException("FeedFormat is not defined for archived feed with content ID " + sys_contentid);
+			}	
 			IPSAssemblyTemplate template = aService.findTemplateByName(feedFormat.getStringValue());
 
 			Map<String, Object> bindings = new HashMap<String, Object>();
@@ -2628,10 +2675,6 @@ public class ItemRestServiceImpl implements IItemRestService {
 			}
 			is.close();
 			assemblyResult = sb.toString();
-		} catch (Exception e) {
-			items.addError(ErrorCode.ASSEMBLY_ERROR, "Assembly Error", e);
-		}
-		try {
 			log.debug("Assembly result is " + assemblyResult);
 			output = ItemServiceHelper.getItemsFromXml(assemblyResult);
 
@@ -2649,20 +2692,52 @@ public class ItemRestServiceImpl implements IItemRestService {
 				}
 
 			}
+	
 		} catch (Exception e) {
-			items.addError(ErrorCode.ASSEMBLY_ERROR,
-					"Assembly output xml invalid:" + assemblyResult, e);
-			log.debug(e,e);
+			if (e instanceof ArchivedException )			
+				log.debug(e.getMessage());
+			else {
+				items.addError(ErrorCode.ASSEMBLY_ERROR, "Assembly Error" + assemblyResult, e);
+				log.debug("Assembly Error" + assemblyResult,e);
+			}
 		}
 		
+	// send an email when there are updates or errors
+		
+		if (items.hasItems()) {						
+			String body = "Content ID of Updated Item: " + sys_contentid;
+			String subject = "STATUS: " + FEED_STATUS_UPDATED;
+			sendEmailNotification(subject, body);
+		}	
+		
+		if (items.hasErrors()) {
+			String str = null;
+			StringBuffer sb = new StringBuffer("Errors found in Content ID: " + sys_contentid);
+			sb.append("\n Error is: ");
+			List <Error>mailErrors = items.getErrors();
+			int i = 0;
+			int size = mailErrors.size();
+			for (Error err : mailErrors) {
+				str = err.getErrorMessage();
+				if (str == null || str.equals(""))
+					str = "no error message";
+				   sb.append(str);
+				   i++;
+				   if (i < size)
+					   sb.append(", ");
+			}
+			String body = new String(sb);
+			String subject = "STATUS: " + FEED_STATUS_ERROR;
+			sendEmailNotification(subject, body);
+		}
+					
 		//@TODO: Add additional support.
 		//If we got this far, give them the good news.
+		
 		ResponseBuilder builder = Response.status(Status.OK);
 		builder.type("text/plain");
 		builder.entity("Feed processing completed.");
-	
-		return builder.build();
-		
+		return builder.build();	
 	}
 
 	@Override
@@ -2694,4 +2769,65 @@ public class ItemRestServiceImpl implements IItemRestService {
 		return ret;
 	}
 	
+	/**
+	 * Method to send email notification configured via
+	 * 
+	 * @param String subject
+	 * @param String body
+	 * @throws IOException
+	 * @throws FileNotFoundException
+	 * @throws ItemRestException
+	 * @throws ItemRestNotModifiedException 
+	 */
+	public void sendEmailNotification(String esubject, String ebody) {
+		
+		Properties props = new Properties();
+		try {
+		String propFile = PSServer.getRxFile(PSServer.BASE_CONFIG_DIR + "/Workflow/" + EMAIL_NOTIFICATION_PROPS);		
+		props.load(new FileInputStream(propFile));	
+	     
+		String from_line 	= props.getProperty("from_line");
+		if (from_line.equals(""))
+			from_line = null;
+		String to_line		= props.getProperty("to_line");	
+		if (to_line.equals(""))
+			to_line = null;
+		String cc_line 		= props.getProperty("cc_line");	
+		if (cc_line.equals(""))
+			cc_line = null;
+		String bcc_line 	= props.getProperty("bcc_line");	
+		if (bcc_line.equals(""))
+			bcc_line = null;
+		
+		StringBuffer body_buffer = new StringBuffer("");
+		String email_body = props.getProperty("body");
+		if(!email_body.equals(""))
+			body_buffer.append(email_body);
+		body_buffer.append("\n");
+		body_buffer.append(ebody);
+		body_buffer.append("\n");
+		String body_ps = props.getProperty("body_ps");
+		body_buffer.append(body_ps);
+		String body = new String(body_buffer);
+		
+		StringBuffer subject_buffer = new StringBuffer("");
+		String email_subject = props.getProperty("subject");
+		if(!email_subject.equals(""))
+			subject_buffer.append(email_subject);
+		subject_buffer.append(esubject);
+		String subject = new String(subject_buffer);
+		
+		PSOEmailUtils.sendEmail(from_line, to_line, cc_line, bcc_line, subject, body);
+		}
+		//If properties file does not exist, don't send email
+			catch(IOException e) {	
+				
+			}
+	}
+	
 }
+	
+
+
+	
+

@@ -1,4 +1,9 @@
 /*******************************************************************************
+
+
+ * 
+ * 
+ * 
  * Copyright (c) 1999-2011 Percussion Software.
  * 
  * Permission is hereby granted, free of charge, to use, copy and create derivative works of this software and associated documentation files (the "Software") for internal use only and only in connection with products from Percussion Software. 
@@ -17,9 +22,14 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.percussion.pso.restservice.impl.ItemRestServiceImpl;
 @XmlRootElement(name = "Items")
 public class Items {
-   private List<Item> items;
+   private List<Item> items = new ArrayList<Item>();
    private List<Error> errors = null;
 
 
@@ -33,7 +43,7 @@ public void setItems(List<Item> items) {
 	this.items = items;
 }
 
-
+private static final Log log = LogFactory.getLog(Items.class);
 @XmlElement(name = "Error")
 @XmlElementWrapper(name="Errors")
 public List<Error> getErrors() {
@@ -45,8 +55,9 @@ public void setErrors(List<Error> errors) {
 }
 
 public void addError(Error.ErrorCode error, String message) {
-	if(errors == null) errors = new ArrayList<Error>();
+	if(errors == null) errors = new ArrayList<Error>(); 
 	errors.add(new Error(error,message));
+	log.debug("Error is: " + message);
 }
 
 
@@ -64,6 +75,7 @@ public void addError(Error.ErrorCode error,String message, Exception e) {
 	StringWriter sw = new StringWriter();
 	e.printStackTrace(new PrintWriter(sw));
 	errors.add(new Error(error,messageex + "\n"+ message +"\n"+sw.toString()));
+	log.debug("Error is: " + message);
 	
 }
 
@@ -71,6 +83,7 @@ public void addError(Error.ErrorCode error,String message, Exception e) {
 public void addError(Error.ErrorCode error) {
 	if(errors == null) errors = new ArrayList<Error>();
 	errors.add(new Error(error));
+	log.debug("Error is: " + error.toString());
 }
 
 public boolean hasError(Error.ErrorCode error) {
@@ -80,6 +93,21 @@ public boolean hasError(Error.ErrorCode error) {
 				return true;
 			}
 		}
+	}
+	return false;
+}
+
+public boolean hasItems() {
+	if (items != null && !items.isEmpty()) {
+		return true;
+	}
+	return false;
+}
+
+
+public boolean hasErrors() {
+	if (errors != null && !errors.isEmpty()) {
+		return true;
 	}
 	return false;
 }

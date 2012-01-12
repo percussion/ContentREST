@@ -110,8 +110,8 @@
 
 	<target name="compile" description="compile the source ">
 		<!-- Compile the java code from ${src} into ${bin} -->
-		<javac srcdir="${src}" destdir="${bin}" debug="true" target="1.6"
-			source="1.6" classpathref="rx.class.path" />
+	 <javac srcdir="${src}" destdir="${bin}" debug="true" target="1.6"
+			source="1.6" classpathref="rx.class.path" includeantruntime="false" />
 		<copy todir="${bin}">
 			<fileset dir="${src}">
 				<include name="**/*.xml" />

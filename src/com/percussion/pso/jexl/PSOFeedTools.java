@@ -1,4 +1,5 @@
 /*******************************************************************************
+
  * Copyright (c) 1999-2011 Percussion Software.
  * 
  * Permission is hereby granted, free of charge, to use, copy and create derivative works of this software and associated documentation files (the "Software") for internal use only and only in connection with products from Percussion Software. 
@@ -215,7 +216,7 @@ public class PSOFeedTools extends PSJexlUtilBase implements IPSJexlExpression {
 	  
 	 
 	 @IPSJexlMethod(description="Sends an email via velocity.",
-			 params ={@IPSJexlParam(name="from_line", description="Who the email is from."),
+			 params ={@IPSJexlParam(name="from_line", description="Comma seperated list of email addresses from which the email is sent."),
 			 @IPSJexlParam(name="to_line", description="Comma seperated list of email addresses to send message to."),
 			 @IPSJexlParam(name="cc_line", description="Comma seperated list of email addresses to be carbon copied on the message."),
 			 @IPSJexlParam(name="bcc_line", description="Comma seperated list of email addresses to be blind copied on the message."),

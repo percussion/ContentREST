@@ -1,4 +1,5 @@
 /*******************************************************************************
+
  * Copyright (c) 1999-2011 Percussion Software.
  * 
  * Permission is hereby granted, free of charge, to use, copy and create derivative works of this software and associated documentation files (the "Software") for internal use only and only in connection with products from Percussion Software. 
