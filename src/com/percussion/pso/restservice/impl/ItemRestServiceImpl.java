@@ -2781,6 +2781,9 @@ public class ItemRestServiceImpl implements IItemRestService {
 	 */
 	public void sendEmailNotification(String esubject, String ebody) {
 		
+		File f = new File(PSServer.getRxFile(PSServer.BASE_CONFIG_DIR + "/Workflow/" + EMAIL_NOTIFICATION_PROPS));
+		if(f.exists()){
+	
 		Properties props = new Properties();
 		try {
 		String propFile = PSServer.getRxFile(PSServer.BASE_CONFIG_DIR + "/Workflow/" + EMAIL_NOTIFICATION_PROPS);		
@@ -2823,6 +2826,7 @@ public class ItemRestServiceImpl implements IItemRestService {
 			catch(IOException e) {	
 				
 			}
+		}
 	}
 	
 }
