@@ -164,7 +164,7 @@
 			<include name="com/percussion/pso/**" />
 			<exclude name="log4j.properties" />
 			<include name="build.properties" />
-			<include name="readme.txt" />
+			<include name="README.md" />
 		</jar>
 
 	</target>
