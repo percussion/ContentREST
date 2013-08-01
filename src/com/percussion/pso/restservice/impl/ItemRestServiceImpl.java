@@ -2780,52 +2780,49 @@ public class ItemRestServiceImpl implements IItemRestService {
 	 * @throws ItemRestNotModifiedException 
 	 */
 	public void sendEmailNotification(String esubject, String ebody) {
-	
-			File f = new File(PSServer.getRxFile(PSServer.BASE_CONFIG_DIR + "/Workflow/" + EMAIL_NOTIFICATION_PROPS));
-			if(f.exists()){
-				Properties props = new Properties();
-				try {
-				String propFile = PSServer.getRxFile(PSServer.BASE_CONFIG_DIR + "/Workflow/" + EMAIL_NOTIFICATION_PROPS);		
-				props.load(new FileInputStream(propFile));	
-			     
-				String from_line 	= props.getProperty("from_line");
-				if (from_line.equals(""))
-					from_line = null;
-				String to_line		= props.getProperty("to_line");	
-				if (to_line.equals(""))
-					to_line = null;
-				String cc_line 		= props.getProperty("cc_line");	
-				if (cc_line.equals(""))
-					cc_line = null;
-				String bcc_line 	= props.getProperty("bcc_line");	
-				if (bcc_line.equals(""))
-					bcc_line = null;
-				
-				StringBuffer body_buffer = new StringBuffer("");
-				String email_body = props.getProperty("body");
-				if(!email_body.equals(""))
-					body_buffer.append(email_body);
-				body_buffer.append("\n");
-				body_buffer.append(ebody);
-				body_buffer.append("\n");
-				String body_ps = props.getProperty("body_ps");
-				body_buffer.append(body_ps);
-				String body = new String(body_buffer);
-				
-				StringBuffer subject_buffer = new StringBuffer("");
-				String email_subject = props.getProperty("subject");
-				if(!email_subject.equals(""))
-					subject_buffer.append(email_subject);
-				subject_buffer.append(esubject);
-				String subject = new String(subject_buffer);
-				
-				PSOEmailUtils.sendEmail(from_line, to_line, cc_line, bcc_line, subject, body);
-				}
-				//If properties file does not exist, don't send email
-					catch(IOException e) {	
-						
-					}
+		
+		Properties props = new Properties();
+		try {
+		String propFile = PSServer.getRxFile(PSServer.BASE_CONFIG_DIR + "/Workflow/" + EMAIL_NOTIFICATION_PROPS);		
+		props.load(new FileInputStream(propFile));	
+	     
+		String from_line 	= props.getProperty("from_line");
+		if (from_line.equals(""))
+			from_line = null;
+		String to_line		= props.getProperty("to_line");	
+		if (to_line.equals(""))
+			to_line = null;
+		String cc_line 		= props.getProperty("cc_line");	
+		if (cc_line.equals(""))
+			cc_line = null;
+		String bcc_line 	= props.getProperty("bcc_line");	
+		if (bcc_line.equals(""))
+			bcc_line = null;
+		
+		StringBuffer body_buffer = new StringBuffer("");
+		String email_body = props.getProperty("body");
+		if(!email_body.equals(""))
+			body_buffer.append(email_body);
+		body_buffer.append("\n");
+		body_buffer.append(ebody);
+		body_buffer.append("\n");
+		String body_ps = props.getProperty("body_ps");
+		body_buffer.append(body_ps);
+		String body = new String(body_buffer);
+		
+		StringBuffer subject_buffer = new StringBuffer("");
+		String email_subject = props.getProperty("subject");
+		if(!email_subject.equals(""))
+			subject_buffer.append(email_subject);
+		subject_buffer.append(esubject);
+		String subject = new String(subject_buffer);
+		
+		PSOEmailUtils.sendEmail(from_line, to_line, cc_line, bcc_line, subject, body);
 		}
+		//If properties file does not exist, don't send email
+			catch(IOException e) {	
+				
+			}
 	}
 	
 }
