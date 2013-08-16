@@ -3,7 +3,7 @@
 <ivy-module version="1.3">
 	<info organisation="percussion" module="contentrs" revision="1.0"
 		status="release">
-		<description>This is the PSO Toolkit for use with Rhythmyx version 6.5
+		<description>This is the content rest service for use with Rhythmyx version 6.7
 			and later.
 			Copyright 2005-2008 Percussion Software, Inc. All rights reserved.
 		</description>
