@@ -30,21 +30,19 @@
 		</move>
 		<fail unless="env.RHYTHMYX_HOME"
 			message="You must set the RHYTHMYX_HOME environment variable" />
-	<!--	
+		
 		<copy todir="${rhythmyx.lib}" verbose="true">
 			<fileset dir="${lib}">
-				<include name="**.jar" />
-			</fileset>
-			<fileset dir="${basedir}">
-				<include name="**.jar" />
+				<include name="contentrs*.jar" />
 			</fileset>
 		</copy>
-		-->
-		<copy todir="${rhythmyx.baselib}" verbose="true">
+	
+		<!-- 	<copy todir="${rhythmyx.baselib}" verbose="true">
 			<fileset dir="${lib}">
 				<include name="spring*.jar" />
 			</fileset>
 		</copy>
+		 -->
 		<copy todir="${rhythmyx.WEB-INF}" verbose="true">
 			<fileset dir="WEB-INF" />
 		</copy>
