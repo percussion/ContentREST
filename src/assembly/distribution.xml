@@ -49,10 +49,6 @@
             <outputDirectory>/</outputDirectory>
         </file>
         <file>
-            <source>addProp.xslt</source>
-            <outputDirectory>/</outputDirectory>
-        </file>
-        <file>
             <source>${project.build.directory}/${project.artifactId}-${project.version}.jar</source>
             <outputDirectory>/</outputDirectory>
         </file>
