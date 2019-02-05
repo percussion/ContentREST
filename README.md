@@ -1,34 +1,30 @@
-This is the ContentRest service for Rhythmyx 6.7
+**Content Rest Service**
 
-Do not install this package on 6.5.2 or 7.x!
+Provides a restful interface for import content into the CMS through import templates that are defined in Velocity Templates.
 
+This version has been updated for the 7.3.2 [732_20180928] Patch level.
 
-If you have the Rhythmyx Patch Toolkit installed, you can use the 
-Install.bat or install.sh scripts: 
+**Installation**
+`
+Download the release version and unzip it on the Percussion Server.
 
->Install.bat c:\Rhythmyx
->sh install.sh ~/Rhythmyx
+Run the Install.bat or install.sh script from a command prompt while the Percussion Service is in a stopped state.  
 
-Where the argument is the home directory where Rhythmyx is installed. 
+Windows Example  (Percussion is installed in the C:\Rhythmyx folder):
 
-Otherwise, to manually install, you must have Java 1.5 and Apache Ant properly installed. 
-The RHYTHMYX_HOME environment variable must point at your Rhythmyx 6.5 installation.  
+c:\downloads\psotoolkit\Install.bat C:\Rhythmyx
 
+Linux Example: Percussion is installed in the /opt/Percussion folder.
 
-Type the command: 
+$ ./install.sh /opt/Percussion
 
-ant -f deploy.xml 
+**Contributing**
+The project is configured with Apache Maven and currently requires maven 3 or greater. 
 
+After cloning the project.
 
-To use the patch installer to install on Linux, add these lines to your .profile  
+mvn clean install
 
-export RHYTHMYX_HOME=$HOME/Rhythmyx  ##or where ever it is installed
-export JAVA_HOME=$RHYTHMYX_HOME/JRE/
-export ANT_HOME=$RHYTHMYX_HOME/Patch/InstallToolkit/
-
-you can then run Ant: 
-
-$ANT_HOME/bin/ant -f deploy.xml 
-
+Will build the distribution zip and execute tests. To skip tests, pass the -DskipTests=true parameter. 
 
 
