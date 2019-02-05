@@ -1,8 +1,7 @@
-<project name="Rhythmyx 6 Install Extensions" default="dist"
-	basedir=".">
+<project name="Install Extensions" default="dist"
+		 basedir=".">
 	<description>
-		Install extensions on a Rhythmyx 6 server
-		The RHYTHMYX_HOME environment variable must be set 
+		Install extensions on a Rhythmyx server
     </description>
 	<property environment="env" />
 	<!-- base directory of Rhythmyx installation -->
@@ -11,21 +10,12 @@
 		value="${rhythmyx.home}/AppServer/server/rx/deploy/rxapp.ear/rxapp.war/WEB-INF" />
 	<property name="rhythmyx.lib" value="${rhythmyx.WEB-INF}/lib" />
 	<property name="rhythmyx.baselib" value="${rhythmyx.home}/AppServer/server/rx/lib" />
+	<property name="jetty.webapps" value="${rhythmyx.home}/jetty/base/webapps/Rhythmyx"/>
 	<!-- relative paths -->
 	<property name="lib" location="lib" />
 
 
 	<target name="jarcopy" description="copy the jar file">
-		<move todir="${rhythmyx.lib}" failonerror="false">
-				    <fileset dir="${rhythmyx.lib}">
-				    	 <include name="cxf-2.1.3.jar" /> 
-				    	 <include name="jsr311-api-0.8.jar" /> 
-				    	<!-- remove old Content-rs if it exists -->
-				    	 <include name="Content-rs.jar" /> 
-				    	 <include name="contentrs-*.jar" /> 
-				    </fileset>
-				    <mapper type="glob" from="*" to="*.bak"/>
-		</move>
 		<fail unless="env.RHYTHMYX_HOME"
 			message="You must set the RHYTHMYX_HOME environment variable" />
 		
@@ -37,18 +27,27 @@
 				<include name="**.jar" />
 			</fileset>
 		</copy>
-		<copy todir="${rhythmyx.baselib}" verbose="true">
+
+		<copy todir="${jetty.webapps}/WEB-INF/lib" verbose="true">
 			<fileset dir="${lib}">
-				<include name="spring*.jar" />
+				<include name="**.jar"/>
+			</fileset>
+			<fileset dir="${basedir}">
+				<include name="**.jar"/>
 			</fileset>
 		</copy>
+
 		<copy todir="${rhythmyx.WEB-INF}" verbose="true">
 			<fileset dir="WEB-INF" />
 		</copy>
+
+		<copy todir="${jetty.webapps}/WEB-INF" verbose="true">
+			<fileset dir="WEB-INF"/>
+		</copy>
+
 		<copy todir="${rhythmyx.home}/rxconfig" verbose="true" failonerror="false" overwrite="false">
 			<fileset dir="Rhythmyx/rxconfig" />
 		</copy>
-		
 	</target>
 
 	<target name="installExtensions">
@@ -83,6 +82,18 @@
 		</java>
 	</target>
 
+	<target name="uninstall">
+		<echo message="Uninstalling previous version..."/>
+		<delete casesensitive="false" failonerror="false" verbose="true">
+			<fileset>
+				<filename
+						name="${rhythmyx.home}/AppServer/server/rx/rxapp.ear/rxapp.war/WEB-INF/lib/Content-rs.jar*.jar"/>
+				<filename name="${jetty.webapps}/WEB-INF/lib/Content-rs*.jar"/>
+			</fileset>
+		</delete>
+
+	</target>
+
 	<target name="javadoc">
 		<fail unless="env.RHYTHMYX_HOME"
 			message="You must set the RHYTHMYX_HOME environment variable" />
@@ -95,9 +106,8 @@
 		<fail unless="env.RHYTHMYX_HOME"
 			message="You must set the RHYTHMYX_HOME environment variable" />
 		<echo>Installing Content-rs to ${rhythmyx.home}</echo>
+		<antcall target="uninstall"/>
 		<antcall target="jarcopy" />
 		<antcall target="installExtensions" />
-
-		<!--<antcall target="javadoc" /> -->
 	</target>
 </project>
