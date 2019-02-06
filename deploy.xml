@@ -87,7 +87,7 @@
 		<delete casesensitive="false" failonerror="false" verbose="true">
 			<fileset>
 				<filename
-						name="${rhythmyx.home}/AppServer/server/rx/rxapp.ear/rxapp.war/WEB-INF/lib/Content-rs.jar*.jar"/>
+						name="${rhythmyx.home}/AppServer/server/rx/rxapp.ear/rxapp.war/WEB-INF/lib/Content-rs*.jar"/>
 				<filename name="${jetty.webapps}/WEB-INF/lib/Content-rs*.jar"/>
 			</fileset>
 		</delete>
