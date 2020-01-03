@@ -45,9 +45,6 @@
 			<fileset dir="WEB-INF"/>
 		</copy>
 
-		<copy todir="${rhythmyx.home}/rxconfig" verbose="true" failonerror="false" overwrite="false">
-			<fileset dir="Rhythmyx/rxconfig" />
-		</copy>
 	</target>
 
 	<target name="installExtensions">
@@ -58,26 +55,21 @@
 			<arg value="${rhythmyx.home}" />
 			<arg value="${basedir}" />
 			<classpath>
-				<fileset dir="${rhythmyx.lib}">
-					<include name="rxserver.jar" />
-					<include name="rxclient.jar" />
-					<include name="rxbusiness.jar" />
-					<include name="rxutils.jar" />
-					<include name="rxservices.jar" />
-					<include name="commons-lang*.jar" />
-					<include name="commons-jexl*.jar" />
-					<include name="jcr*.jar" />
-					<include name="commons-logging*.jar" />
-					<include name="commons-collections*.jar" />
-					<include name="commons-httpclient*.jar" />
+				<fileset dir="${rhythmyx.home}/jetty/defaults/lib/perc-logging">
+					<include name="*.jar"/>
 				</fileset>
-				<fileset dir="${rhythmyx.home}/AppServer/lib/endorsed">
-					<include name="xml-apis.jar" />
+				<fileset dir="${rhythmyx.home}/jetty/defaults/lib/perc">
+					<include name="*.jar"/>
 				</fileset>
-				<fileset dir="${rhythmyx.home}/AppServer/server/rx/lib">
-					<include name="commons-collections*.jar" />
-					<include name="javax.servlet.jar" />
+				<fileset dir="${rhythmyx.home}/jetty/defaults/lib/jdbc">
+					<include name="*.jar"/>
 				</fileset>
+      				<fileset dir="${rhythmyx.home}/jetty/base/lib/jdbc">
+                                        <include name="*.jar"/>
+                                </fileset>
+                                <fileset dir="${rhythmyx.home}/jetty/base/webapps/Rhythmyx/WEB-INF/lib">
+                                        <include name="*.jar"/>
+                                </fileset>
 			</classpath>
 		</java>
 	</target>
@@ -85,26 +77,19 @@
 	<target name="uninstall">
 		<echo message="Uninstalling previous version..."/>
 		<delete casesensitive="false" failonerror="false" verbose="true">
-			<fileset>
-				<filename
-						name="${rhythmyx.home}/AppServer/server/rx/rxapp.ear/rxapp.war/WEB-INF/lib/Content-rs*.jar"/>
-				<filename name="${jetty.webapps}/WEB-INF/lib/Content-rs*.jar"/>
+			<fileset dir="${rhythmyx.home}/AppServer/server/rx/deploy/rxapp.ear/rxapp.war/WEB-INF/lib/">
+				<include name="Content-rs*.jar"/>
 			</fileset>
+			<fileset dir="${rhythmyx.home}/jetty/base/webapps/Rhythmyx/WEB-INF/lib/">
+                                <include name="Content-rs*.jar"/>
+                        </fileset>
 		</delete>
-
 	</target>
 
 	<target name="javadoc">
-		<fail unless="env.RHYTHMYX_HOME"
-			message="You must set the RHYTHMYX_HOME environment variable" />
-		<copy todir="${rhythmyx.home}/Docs/Rhythmyx/PSOToolkit">
-			<fileset dir="javadoc" />
-		</copy>
 	</target>
 
 	<target name="dist">
-		<fail unless="env.RHYTHMYX_HOME"
-			message="You must set the RHYTHMYX_HOME environment variable" />
 		<echo>Installing Content-rs to ${rhythmyx.home}</echo>
 		<antcall target="uninstall"/>
 		<antcall target="jarcopy" />
