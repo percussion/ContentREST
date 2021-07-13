@@ -1,3 +1,8 @@
+**This project is Archived**
+------
+
+The functionality has been merged into the perc-toolkit module of Percussion CMS 8
+***
 **Content Rest Service**
 
 Provides a restful interface for import content into the CMS through import templates that are defined in Velocity Templates.
